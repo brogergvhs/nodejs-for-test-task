@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+import { NextUIProvider } from '@nextui-org/react';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { SocketProvider } from './hooks/SocketContext';
@@ -10,9 +11,11 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <SocketProvider>
-      <App />
-    </SocketProvider>
+    <NextUIProvider>
+      <SocketProvider>
+        <App />
+      </SocketProvider>
+    </NextUIProvider>
   </React.StrictMode>,
 );
 

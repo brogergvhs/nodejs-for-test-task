@@ -1,5 +1,8 @@
 import React from 'react';
 import axios from 'axios';
+import {
+  Button, Card, CardHeader, CardBody, CardFooter, Divider, Progress,
+} from '@nextui-org/react';
 import TodoForm from './TodoForm';
 import { Todo } from '../types';
 
@@ -20,31 +23,40 @@ function TodoCard({ todo }: { todo: Todo }): JSX.Element {
     }
   }
 
+  function goToSingleTodo(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void {
+    e.preventDefault();
+  }
+
   if (isEditing && todo) {
     return (
-      <TodoForm todo={todo} />
+      <TodoForm setCreatingTodo={() => setIsEditing(false)} todo={todo} />
     );
   }
 
   return (
-    <div style={{
-      border: '1px solid #ddd', borderRadius: '4px', padding: '10px', marginBottom: '10px',
-    }}
-    >
-      <h2 style={{ margin: '0 0 10px 0' }}>{todo.name}</h2>
-      <p style={{ margin: '0 0 10px 0' }}>{todo.description}</p>
-      <p style={{ margin: '0 0 10px 0' }}>
-        {todo.progress}
-        %
-      </p>
-      <div style={{ height: '20px', backgroundColor: '#f3f3f3' }}>
-        <div style={{ height: '100%', width: `${todo.progress}%`, backgroundColor: '#4caf50' }} />
-      </div>
-      <div>
-        <button type="button" onClick={() => setIsEditing(true)}>Edit</button>
-        <button type="button" onClick={handleDelete}>Delete</button>
-      </div>
-    </div>
+    <Card className="w-full max-w-[400px] cursor-pointer hover:scale-[101%]" onClick={(e) => goToSingleTodo(e)}>
+      <CardHeader className="flex gap-3">
+        <div className="font-semibold text-lg">
+          {todo.name}
+        </div>
+      </CardHeader>
+      <Divider />
+      <CardBody>
+        <p>{todo.description}</p>
+        <div className="flex flex-row items-center gap-3">
+          <span>
+            {todo.progress}
+            %
+          </span>
+          <Progress aria-label="Loading..." value={todo.progress} className="max-w-md" />
+        </div>
+      </CardBody>
+      <Divider />
+      <CardFooter className="gap-3">
+        <Button color="primary" onClick={() => setIsEditing(true)}>Edit</Button>
+        <Button color="danger" onClick={() => handleDelete()}>Delete</Button>
+      </CardFooter>
+    </Card>
   );
 }
 

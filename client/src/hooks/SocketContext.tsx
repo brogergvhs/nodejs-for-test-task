@@ -1,5 +1,5 @@
 import React, {
-  createContext, useContext, useEffect, useState,
+  createContext, useContext, useEffect, useState, useMemo,
 } from 'react';
 import { io, Socket } from 'socket.io-client';
 
@@ -15,7 +15,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }): JSX
   useEffect(() => {
     if (!process.env.REACT_APP_SOCKET_SERVER_URL) {
       console.error('SOCKET_SERVER_URL is not defined');
-      return;
+      return undefined;
     }
 
     const newSocket = io(process.env.REACT_APP_SOCKET_SERVER_URL);
@@ -26,7 +26,9 @@ export function SocketProvider({ children }: { children: React.ReactNode }): JSX
     };
   }, []);
 
-  return <SocketContext.Provider value={{ socket }}>{children}</SocketContext.Provider>;
+  const value = useMemo(() => ({ socket }), [socket]);
+
+  return <SocketContext.Provider value={value}>{children}</SocketContext.Provider>;
 }
 
 export function useSocket(): SocketContextValue {

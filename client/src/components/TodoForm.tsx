@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import {
+  Button, Card, CardBody, CardFooter, CardHeader, Divider, Input, Textarea,
+} from '@nextui-org/react';
 import { v4 as uuidv4 } from 'uuid';
 import { Todo } from '../types';
 
@@ -10,11 +13,16 @@ const mockTodo: Todo = {
   progress: 0,
 };
 
-function TodoForm({ todo = mockTodo }: {todo?: Todo}): JSX.Element {
+function TodoForm({
+  todo = mockTodo,
+  setCreatingTodo,
+}: {
+  todo?: Todo;
+  setCreatingTodo: () => void;
+}): JSX.Element {
   const id = todo?._id;
   const [name, setName] = useState<string>(todo.name);
   const [description, setDescription] = useState<string>(todo.description);
-  const [progress, setProgress] = useState<number>(todo.progress);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -24,7 +32,7 @@ function TodoForm({ todo = mockTodo }: {todo?: Todo}): JSX.Element {
     }
 
     const todoData = {
-      _id: id, name, description, progress,
+      _id: id, name, description, progress: todo.progress,
     };
 
     if (!id) {
@@ -47,22 +55,22 @@ function TodoForm({ todo = mockTodo }: {todo?: Todo}): JSX.Element {
 
   return (
     <form onSubmit={handleSubmit}>
-      <label htmlFor="name">
-        Name:
-        <input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} />
-      </label>
-      <label htmlFor="description">
-        Description:
-        <input id="description" type="text" value={description} onChange={(e) => setDescription(e.target.value)} />
-      </label>
-      <label htmlFor="progress">
-        Progress:
-        <input id="progress" max="100" type="number" value={progress} onChange={(e) => setProgress(Number(e.target.value))} />
-      </label>
-      <button disabled={!name || !description} type="submit">
-        {id ? 'Update' : 'Create'}
-        To Do
-      </button>
+      <Card className="flex-1 w-full max-w-[400px]">
+        <CardHeader className="flex gap-3">
+          <Input size="sm" type="text" label="Name" value={name} onChange={(e) => setName(e.target.value)} />
+        </CardHeader>
+        <Divider />
+        <CardBody>
+          <Textarea label="Description" placeholder="Write a nice To Do description" value={description} onChange={(e) => setDescription(e.target.value)} />
+        </CardBody>
+        <Divider />
+        <CardFooter className="gap-3">
+          <Button isDisabled={!name || !description} type="submit" color="primary">
+            {id ? 'Update' : 'Create'}
+          </Button>
+          <Button onClick={setCreatingTodo}>Cancel</Button>
+        </CardFooter>
+      </Card>
     </form>
   );
 }
