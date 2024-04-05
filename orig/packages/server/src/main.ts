@@ -134,24 +134,29 @@ class Main {
       console.log("[POST] Added: ", todo);
       console.log("[POST] Current todos: ", this.todos);
 
+      if (this.io) this.io.emit('todos-updated');
+
       return res.status(200).send(todo);
     });
   };
 
   private handlePutRequest = (req: Request, res: Response) => {
     this.processRequest(req, res, () => {
-      const { _id, description, name, progress } = req.body as ITodo;
+      const { _id, name, description, progress } = req.body as ITodo;
       if (!_id) return this.sendBadRequestResponse("_id", res);
 
       const targetTodo = this.todos.find((t) => t._id === _id);
       if (!targetTodo) return this.sendNotFoundResponse("todo", res);
 
+      console.log(`[PUT] Updating ${_id} with ${description}|${name}|${progress}`);
       targetTodo.description = description || targetTodo.description;
-      targetTodo.description = name || targetTodo.name;
+      targetTodo.name = name || targetTodo.name;
       targetTodo.progress = progress ?? targetTodo.progress;
 
       console.log(`[PUT] Updated ${_id} with ${description}|${name}|${progress}`);
       console.log("[PUT] Current todos: ", this.todos);
+
+      if (this.io) this.io.emit('todos-updated');
 
       res.status(200).send(this.todos);
     });
@@ -162,7 +167,7 @@ class Main {
       const { _id } = req.params;
       if (!_id) return this.sendBadRequestResponse("_id", res);
 
-      const targetTodoIndex = this.todos.findIndex((t) => t._id === _id);
+      const targetTodoIndex = this.todos.findIndex((t) => String(t._id) === String(_id));
       if (targetTodoIndex === -1) return this.sendNotFoundResponse("todo", res);
 
       this.todos.splice(targetTodoIndex, 1);
@@ -170,6 +175,7 @@ class Main {
       console.log(`[DELETE] Removed ${_id} todo`);
       console.log("[DELETE] Todos: ", this.todos);
 
+      if (this.io) this.io.emit('todos-updated');
       const response: IDefaultResponse = { success: true };
 
       return res.status(200).send(response);
